@@ -3,6 +3,7 @@ import pygame
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
+from alien import Alien
 
 class AlienInvasion():
 
@@ -20,6 +21,8 @@ class AlienInvasion():
 
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
+        self.aliens = pygame.sprite.Group()
+        self._create_fleet()    
 
     def _check_events(self):
             #responde aos eventos de teclado e mouse
@@ -66,6 +69,33 @@ class AlienInvasion():
                 if bullet.rect.bottom <= 0:
                     self.bullets.remove(bullet)
 
+    def _create_fleet(self):
+    #cria a frota de alienígenas."""
+    #cria um alienígena e continua adicionando alienígenas até que não haja mais espaço disponível.
+    #o espaçamento entre os alienígenas é de uma largura de alienígena e uma altura de alienígena.
+        alien = Alien(self)
+        alien_width, alien_height = alien.rect.size
+
+        current_x, current_y = alien_width, alien_height
+        while current_y < (self.settings.screen_height - 3 * alien_height):
+            while current_x < (self.settings.screen_width - 2 * alien_width):
+                self._create_alien(current_x, current_y)
+                current_x += 2 * alien_width
+
+            # Finalizou uma linha; redefine o valor de x
+            # e incrementa o valor de y.
+            current_x = alien_width
+            current_y += 2 * alien_height
+
+
+    def _create_alien(self, x_position, y_position):
+        """Cria um alienígena e o posiciona na frota."""
+        new_alien = Alien(self)
+        new_alien.x = x_position
+        new_alien.rect.x = x_position
+        new_alien.rect.y = y_position
+        self.aliens.add(new_alien)
+
 
     def _update_screen(self):
         #redesenha a tela durante cada passagem pelo loop
@@ -73,6 +103,7 @@ class AlienInvasion():
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.ship.blitme()
+        self.aliens.draw(self.screen)
 
         # Deixa a tela desenhada mais recente visível
         pygame.display.flip()
@@ -86,7 +117,9 @@ class AlienInvasion():
             self.ship.update()
             self._update_bullets()
             self._update_screen()
+            self._update_aliens()
             self.clock.tick(60)
+            
 
             
 

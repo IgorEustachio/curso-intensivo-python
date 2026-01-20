@@ -10,7 +10,7 @@ class Ship():
         self.screen_rect = ai_game.screen.get_rect() #rect = rectangle
 
         #faz upload da imagem e obtém seu rect
-        self.image = pygame.image.load('images/ship.bmp')
+        self.image = pygame.image.load('projetos/alien_invasion/images/ship.bmp')
         self.rect = self.image.get_rect()
 
         #começa cada espaçonave nova no centro inferior da tela
