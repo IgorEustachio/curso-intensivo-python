@@ -1,9 +1,11 @@
 import sys
+from time import sleep
 import pygame
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
+from game_stats import GameStats
 
 class AlienInvasion():
 
@@ -20,6 +22,7 @@ class AlienInvasion():
 
 
         self.ship = Ship(self)
+        self.stats = GameStats(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self._create_fleet()    
@@ -68,9 +71,21 @@ class AlienInvasion():
         for bullet in self.bullets.copy():
                 if bullet.rect.bottom <= 0:
                     self.bullets.remove(bullet)
+        
+        self._check_bullet_alien_collisions()
+    
+    def _check_bullet_alien_collisions(self):
+        #verifica se algum projétil atingiu um alienígena, se sim remove o projétil e o alienígena
+        collisions = pygame.sprite.groupcollide(
+        self.bullets, self.aliens, True, True)
+
+        if not self.aliens:
+            #destrói os projéteis existentes e cria uma frota nova
+            self.bullets.empty()
+            self._create_fleet()
 
     def _create_fleet(self):
-    #cria a frota de alienígenas."""
+    #cria a frota de alienígenas
     #cria um alienígena e continua adicionando alienígenas até que não haja mais espaço disponível.
     #o espaçamento entre os alienígenas é de uma largura de alienígena e uma altura de alienígena.
         alien = Alien(self)
@@ -96,6 +111,55 @@ class AlienInvasion():
         new_alien.rect.y = y_position
         self.aliens.add(new_alien)
 
+    def _update_aliens(self):
+        #atualiza as posições de todos os alienígenas na frota
+        self.aliens.update()
+        self._check_fleet_edges()
+
+        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+            print('espaçonave danificada!')
+            self._ship_hit()
+
+    def _check_fleet_edges(self):
+        #responde se algum alien atingiu  a borda  
+        for alien in self.aliens.sprites():
+            if alien.check_edges():
+                self._change_fleet_direction()
+                break
+
+    def _change_fleet_direction(self):
+        #faz toda a frota descer e mudar de direção
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.settings.fleet_drop_speed
+            
+        self.settings.fleet_direction *= -1
+
+    def _ship_hit(self):
+        #responde a espaçonave sendo abatida por um alien
+        if self.ship_left > 0:
+            self.stats.ships_left -= 1
+
+            #exlue qualquer alien ou bala que esteja na tela
+            self.aliens.empty()
+            self.bullets.empty()
+
+            #cria uma nova frota e re-centraliza a nave
+            self._create_fleet()
+            self.ship.center_ship()
+
+            #pausa 
+            sleep(0.5)
+        
+        else:
+            self.game_active = False
+
+    def _check_aliens_bottom(self):
+        #Verifica se algum alienígena chegou à parte inferior da tela
+        for alien in self.aliens.sprites():
+            if alien.rect.bottom >= self.settings.screen_height:
+                #trata isso como se a espaçonave tivesse sido abatida
+                self._ship_hit()
+                break   
 
     def _update_screen(self):
         #redesenha a tela durante cada passagem pelo loop
@@ -114,10 +178,13 @@ class AlienInvasion():
         while True:
             #observa eventos de teclado e mouse
             self._check_events()
-            self.ship.update()
-            self._update_bullets()
+
+            if self.game_active:
+                self.ship.update()
+                self._update_bullets()
+                self._update_aliens()
+        
             self._update_screen()
-            self._update_aliens()
             self.clock.tick(60)
             
 
