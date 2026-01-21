@@ -13,6 +13,8 @@ class AlienInvasion():
         #inicializa e cria recursos do jogo
         pygame.init()  
         
+        # Inicializa Invasão Alienígena em um estado ativo
+        self.game_active = True
         self.settings = Settings()
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
@@ -136,7 +138,7 @@ class AlienInvasion():
 
     def _ship_hit(self):
         #responde a espaçonave sendo abatida por um alien
-        if self.ship_left > 0:
+        if self.stats.ships_left > 0:
             self.stats.ships_left -= 1
 
             #exlue qualquer alien ou bala que esteja na tela

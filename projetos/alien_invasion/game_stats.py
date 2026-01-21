@@ -4,7 +4,7 @@ class GameStats:
     def __init__(self, ai_game):
         #inicializa as estastísticas
         self.settings = ai_game.settings
-        self.reset_stats()
+        self.resets_stats()
 
     def resets_stats(self):
         #inicializa as estatísticas que mudam durante o jogo
