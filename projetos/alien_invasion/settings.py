@@ -1,6 +1,6 @@
 class Settings():
     #classe para armazenar as configurações do jogo Alien Invasion 
-    def __init__(self):
+    def __init__(self): #toda classe relacionada ao fluxo principal do jogo precisa do parametro ai_game
         #inicializa as configs do jogo
         #configurações da tela 
         self.screen_width = 1200
@@ -8,7 +8,7 @@ class Settings():
         self.bg_color = (230, 230, 230)
 
         #configs da espaçonave
-        self.ship_speed = 1.5
+        self.ship_speed = 2.5
         self.ship_limit = 3
 
         #configs do projétil

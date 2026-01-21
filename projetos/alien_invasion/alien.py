@@ -5,7 +5,7 @@ from pygame.sprite import Sprite
 class Alien(Sprite):
     #Classe para representar um único alienígena na frota
 
-    def __init__(self, ai_game):
+    def __init__(self, ai_game): #toda classe relacionada ao fluxo principal do jogo precisa do parametro ai_game
         #Inicializa o alienígena e define sua posição inicial
         super().__init__()
         self.screen = ai_game.screen

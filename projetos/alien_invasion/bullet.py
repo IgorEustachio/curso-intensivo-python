@@ -4,7 +4,7 @@ from pygame.sprite import Sprite
 class Bullet(Sprite):
     #classe para gerenciar os projeteis disparados pela espaçonave
 
-    def __init__(self, ai_game):
+    def __init__(self, ai_game): #toda classe relacionada ao fluxo principal do jogo precisa do parametro ai_game
         #cria um objeto bullet na posição atual da espaçonave
         super().__init__()
 

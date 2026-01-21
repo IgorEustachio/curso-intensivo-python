@@ -3,7 +3,7 @@ import pygame
 class Ship():
     #classe da espaçonave
 
-    def __init__(self,ai_game): # ai = alien invasion
+    def __init__(self,ai_game): # ai = alien invasion #toda classe relacionada ao fluxo principal do jogo precisa do parametro ai_game
         #inicializa a espaçonave e define sua posição inicial
         self.screen = ai_game.screen
         self.settings = ai_game.settings

@@ -1,7 +1,7 @@
 class GameStats:
     #rastreia as estatisticas do Alien Invasion
 
-    def __init__(self, ai_game):
+    def __init__(self, ai_game): #toda classe relacionada ao fluxo principal do jogo precisa do parametro ai_game
         #inicializa as estastísticas
         self.settings = ai_game.settings
         self.resets_stats()
