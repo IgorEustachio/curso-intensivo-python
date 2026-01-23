@@ -6,7 +6,7 @@ class Button():
     def __init__(self, ai_game, msg): #toda classe relacionada ao fluxo principal do jogo precisa do parametro ai_game
         self.screen = ai_game.screen
         self.screen_rect = ai_game.screen.get_rect()
-
+        
         #defina as propriedades e atributos do botão
         self.width, self.height = 200,50
         self.button_color = (0, 135, 0)
