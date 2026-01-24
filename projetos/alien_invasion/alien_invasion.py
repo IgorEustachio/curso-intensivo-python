@@ -19,17 +19,17 @@ class AlienInvasion():
         self.game_active = False
 
         self.settings = Settings()
+        self.stats = GameStats(self) #passa o self(classe AlienInvasion) para a classe GameStats
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
         self.settings.screen_width = self.screen.get_rect().width
         self.settings.screen_height = self.screen.get_rect().height
         pygame.display.set_caption('Alien Invasion')
         
-        self.ship = Ship(self)
-        self.stats = GameStats(self)
+        self.ship = Ship(self) #passa o self(classe AlienInvasion) para a classe Ship
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
-        self.sb = Scoreboard(self)
+        self.sb = Scoreboard(self) #passa o self(classe AlienInvasion) para a classe Scoreboard
 
         #cria o botão Play
         self.play_button = Button(self, "Play") #"Play" corresponde ao parâmetro msg
@@ -59,8 +59,11 @@ class AlienInvasion():
         if button_clicked and not self.game_active:
             #redefine as estatísticas do jogo
             self.settings.initialize_dynamic_settings()
-            self.stats.resets_stats()
+            self.stats.reset_stats()
             self.sb.prep_score()
+            self.sb.prep_level()
+            self.sb.prep_ships()
+
             self.game_active = True
 
             #descarta quaisquer projéteis e alienígenas restantes
@@ -115,8 +118,12 @@ class AlienInvasion():
 
         if collisions:
             for aliens in collisions.values():
-                self.stats.score += self.settings.alien_points * len(aliens) #soma os pontos de cada alienígena no dicionário.
-            self.sb.prep_score() #cria uma imagem nova com a pontuação atualizada. 
+                #incrementa a pontuação multiplicando o valor de um alienígena pela quantidade de inimigos atingidos na mesma colisão
+                #a função len() é usada para identificar o tamanho da lista de aliens abatidos, garantindo que todos os pontos sejam contabilizados
+                self.stats.score += self.settings.alien_points * len(aliens) 
+
+            self.sb.prep_score() #cria uma imagem nova com a pontuação atualizada
+            self.sb.check_high_score() #checa se o recorde foi batido 
 
         if not self.aliens:
             #destrói os projéteis existentes e cria uma frota nova
@@ -124,10 +131,14 @@ class AlienInvasion():
             self._create_fleet() #cria uma nova frota
             self.settings.increase_speed() #aumenta a velocidade
 
+            #aumenta o nível
+            self.stats.level += 1 
+            self.sb.prep_level() #cria o rect da imagem do nível
+
     def _create_fleet(self):
-    #cria a frota de alienígenas
-    #cria um alienígena e continua adicionando alienígenas até que não haja mais espaço disponível.
-    #o espaçamento entre os alienígenas é de uma largura de alienígena e uma altura de alienígena.
+        #cria a frota de alienígenas
+        #cria um alienígena e continua adicionando alienígenas até que não haja mais espaço disponível.
+        #o espaçamento entre os alienígenas é de uma largura de alienígena e uma altura de alienígena.
         alien = Alien(self)
         alien_width, alien_height = alien.rect.size
 
@@ -179,8 +190,11 @@ class AlienInvasion():
 
     def _ship_hit(self):
         #responde a espaçonave sendo abatida por um alien
+
+        #decrementa ships_left e atualiza a scoreboard
         if self.stats.ships_left > 0:
             self.stats.ships_left -= 1
+            self.sb.prep_ships()
 
             #exlue qualquer alien ou bala que esteja na tela
             self.aliens.empty()

@@ -1,13 +1,15 @@
 class GameStats:
-    #rastreia as estatisticas do Alien Invasion
+    # rastreia as estatísticas do Alien Invasion
 
-    def __init__(self, ai_game): #toda classe relacionada ao fluxo principal do jogo precisa do parametro ai_game
-        #inicializa as estastísticas
+    def __init__(self, ai_game):
         self.settings = ai_game.settings
-        self.resets_stats()
+        self.reset_stats()
 
-    def resets_stats(self):
-        #inicializa as estatísticas que mudam durante o jogo
+        # recorde não é redefinido
+        self.high_score = 0
+
+    def reset_stats(self):
+        #estatísticas que mudam durante o jogo
         self.ships_left = self.settings.ship_limit
-        self.settings.initialize_dynamic_settings()
         self.score = 0
+        self.level = 1
