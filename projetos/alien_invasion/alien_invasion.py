@@ -8,6 +8,7 @@ from alien import Alien
 from game_stats import GameStats
 from button import Button
 from scoreboard import Scoreboard
+from powerup import Powerup
 
 class AlienInvasion():
 
@@ -30,6 +31,7 @@ class AlienInvasion():
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self.sb = Scoreboard(self) #passa o self(classe AlienInvasion) para a classe Scoreboard
+        self.powerup = Powerup(self)
 
         #cria o botão Play
         self.play_button = Button(self, "Play") #"Play" corresponde ao parâmetro msg
@@ -72,6 +74,7 @@ class AlienInvasion():
             #cria uma frota nova e centraliza a espaçonave
             self._create_fleet()
             self.ship.center_ship()
+            self.powerup.position_powerup()
 
             #oulta o cursor do mouse
             pygame.mouse.set_visible(False)
@@ -135,6 +138,10 @@ class AlienInvasion():
             self.stats.level += 1 
             self.sb.prep_level() #cria o rect da imagem do nível
 
+    def _check_collision_ship_powerup(self):
+        if self.ship.rect.colliderect(self.powerup.rect):
+            print('aaa')
+
     def _create_fleet(self):
         #cria a frota de alienígenas
         #cria um alienígena e continua adicionando alienígenas até que não haja mais espaço disponível.
@@ -168,7 +175,6 @@ class AlienInvasion():
         self._check_fleet_edges()
 
         if pygame.sprite.spritecollideany(self.ship, self.aliens):
-            print('espaçonave danificada!')
             self._ship_hit()
 
         #procura por alienígenas se chocando contra a parte inferior da tela
@@ -225,6 +231,7 @@ class AlienInvasion():
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.ship.blitme()
+        self.powerup.blitme_powerup()
         self.aliens.draw(self.screen)
 
         #desenha as informações da pontuação
@@ -246,6 +253,7 @@ class AlienInvasion():
                 self.ship.update()
                 self._update_bullets()
                 self._update_aliens()
+                self.powerup.update()
         
             self._update_screen()
             self.clock.tick(60)
