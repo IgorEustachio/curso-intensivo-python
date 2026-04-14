@@ -1,8 +1,8 @@
 import requests 
-
+import pandas as pd
 #cria uma chamada de api e verifica a resposta
 url = "https://api.github.com/search/repositories"
-url += "?q=language:python+sort:stars+stars:>10000"
+url += "?q=sort:stars+stars:>10000"
 
 headers = {"Accept": "application/vnd.github.v3+json"}
 r = requests.get(url, headers=headers)
@@ -24,13 +24,27 @@ for chave in sorted(repo_dict.keys()):
     print(chave)
 #processa os resultados
 print(response_dict.keys())"""
-
+lista = []
 for repo_dict in repo_dicts:
-    print("\nSelected information about first repository:")
-    print(f"Name: {repo_dict['name']}")
-    print(f"Owner: {repo_dict['owner']['login']}")
-    print(f"Stars: {repo_dict['stargazers_count']}")
-    print(f"Repository: {repo_dict['html_url']}")
-    print(f"Created: {repo_dict['created_at']}")
-    print(f"Updated: {repo_dict['updated_at']}")
-    print(f"Description: {repo_dict['description']}")
+    if repo_dict['language']  == 'JavaScript':
+        print("\nSelected information about first repository:")
+        print(f"Name: {repo_dict['name']}")
+        print(f"Owner: {repo_dict['owner']['login']}")
+        print(f"Stars: {repo_dict['stargazers_count']}")
+        print(f"Repository: {repo_dict['html_url']}")
+        print(f"Created: {repo_dict['created_at']}")
+        print(f"Updated: {repo_dict['updated_at']}")
+        print(f"Description: {repo_dict['description']}")
+        print(f"Language: {repo_dict['language']}")
+
+    repos_js = {
+        'Nome': repo_dict['name'],
+        'Descrição': repo_dict['description'],
+        'Linguagem': repo_dict['language']
+    }
+
+
+    lista.append(repos_js) 
+    
+df = pd.DataFrame(lista)
+print(df)   
