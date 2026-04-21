@@ -24,5 +24,8 @@ class Entry(models.Model): #herda do model base do Django
 
     def __str__(self):
         #método especial. retorna uma string simples representando a entrada
-        return f"{self.text[:50]}..."
+        if len(self.text) > 50: 
+            return f"{self.text[:50]}..."
+        else:
+            return self.text
 
