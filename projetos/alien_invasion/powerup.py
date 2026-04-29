@@ -10,13 +10,13 @@ class Powerup(Sprite):
         self.settings = ai_game.settings
         self.screen_rect = ai_game.screen.get_rect()
 
-        ship_image = pygame.image.load("projetos/alien_invasion/images/ship.bmp")
+        ship_image = pygame.image.load("./images/ship.bmp")
 
         #pega o tamanho da nave
         ship_width, ship_height = ship_image.get_size()
 
         #carrega o powerup
-        powerup_image = pygame.image.load("projetos/alien_invasion/images/powerup.bmp")
+        powerup_image = pygame.image.load("./images/powerup.bmp")
 
         #redimensiona o powerup para o mesmo tamanho da nave
         self.image = pygame.transform.scale(
@@ -43,21 +43,21 @@ class Powerup(Sprite):
             self.screen.blit(self.image, self.rect)
 
     def position_powerup(self):
+        self.active = False
+        self.spawn_timer = 0
+        self.spawn_interval = self._generate_random_interval()
+
+    def _activate_powerup(self):
         self.rect.x = random.randint(0, self.settings.screen_width - self.rect.width)
         self.x = float(self.rect.x)
         self.active = True
-        self.spawn_timer = 0
-        self.spawn_interval = self._generate_random_interval()
-    
+
     def _generate_random_interval(self):
-        #gera um intervalo aleatório em frames (em ms convertido para frames)."""
-        #intervalo entre 3 e 8 segundos (180-480 frames a 60 FPS)
-        return random.randint(60, 180)
-    
+        return random.randint(1800, 3600)
+
     def update(self):
-        #atualiza o timer do powerup.
         if not self.active:
             self.spawn_timer += 1
             if self.spawn_timer >= self.spawn_interval:
-                self.position_powerup()
+                self._activate_powerup()
         

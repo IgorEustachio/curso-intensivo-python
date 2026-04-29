@@ -33,6 +33,11 @@ class AlienInvasion():
         self.sb = Scoreboard(self) #passa o self(classe AlienInvasion) para a classe Scoreboard
         self.powerup = Powerup(self)
 
+        self.powerup_font = pygame.font.SysFont(None, 48)
+        self.powerup_text_timer = 0
+        self.powerup_text_pos = (0, 0)
+        self.powerup_count = 0
+
         #cria o botão Play
         self.play_button = Button(self, "Play") #"Play" corresponde ao parâmetro msg
 
@@ -67,6 +72,7 @@ class AlienInvasion():
             self.sb.prep_ships()
 
             self.game_active = True
+            self.powerup_count = 0
 
             #descarta quaisquer projéteis e alienígenas restantes
             self.bullets.empty()
@@ -139,8 +145,14 @@ class AlienInvasion():
             self.sb.prep_level() #cria o rect da imagem do nível
 
     def _check_collision_ship_powerup(self):
-        if self.ship.rect.colliderect(self.powerup.rect):
-            print('aaa')
+        if self.powerup.active and self.ship.rect.colliderect(self.powerup.rect):
+            self.powerup_text_pos = self.powerup.rect.center
+            self.powerup.position_powerup()
+            self.powerup_text_timer = 90
+            if self.powerup_count < 3:
+                self.settings.bullet_speed *= 1.5
+                self.settings.bullet_width += 4
+                self.powerup_count += 1
 
     def _create_fleet(self):
         #cria a frota de alienígenas
@@ -237,6 +249,11 @@ class AlienInvasion():
         #desenha as informações da pontuação
         self.sb.show_score()
 
+        if self.powerup_text_timer > 0:
+            text_surf = self.powerup_font.render('BALAS+', True, (0, 180, 0))
+            self.screen.blit(text_surf, self.powerup_text_pos)
+            self.powerup_text_timer -= 1
+
         #deixa a tela desenhada mais recente visível
         if not self.game_active:
             self.play_button.draw_button()
@@ -254,6 +271,7 @@ class AlienInvasion():
                 self._update_bullets()
                 self._update_aliens()
                 self.powerup.update()
+                self._check_collision_ship_powerup()
         
             self._update_screen()
             self.clock.tick(60)
