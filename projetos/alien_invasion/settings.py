@@ -5,14 +5,13 @@ class Settings():
         #configurações da tela 
         self.screen_width = 1200
         self.screen_height = 800
-        self.bg_color = (230, 230, 230)
+        self.bg_color = (10, 10, 30)
 
         #configs da espaçonave
         self.ship_limit = 3
 
         #configs do projétil
         self.bullet_height = 18
-        self.bullet_color = (60, 60, 60)
         self.bullets_allowed = 10
 
         #configs dos aliens
@@ -34,6 +33,7 @@ class Settings():
         self.ship_speed = 3.0
         self.bullet_speed = 2.5
         self.bullet_width = 6
+        self.bullet_color = (200, 200, 200)
         self.alien_speed = 1.0
 
         #fleet_direction de 1 representa a direita e de - 1 a esquerda

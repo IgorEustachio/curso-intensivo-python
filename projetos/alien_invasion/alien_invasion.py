@@ -1,4 +1,5 @@
 import sys
+import random
 from time import sleep
 import pygame
 from settings import Settings
@@ -9,6 +10,7 @@ from game_stats import GameStats
 from button import Button
 from scoreboard import Scoreboard
 from powerup import Powerup
+from explosion import Explosion
 
 class AlienInvasion():
 
@@ -26,7 +28,15 @@ class AlienInvasion():
         self.settings.screen_width = self.screen.get_rect().width
         self.settings.screen_height = self.screen.get_rect().height
         pygame.display.set_caption('Alien Invasion')
-        
+
+        self.stars = [
+            [random.randint(0, self.settings.screen_width),
+             random.randint(0, self.settings.screen_height),
+             random.uniform(0.3, 1.5),
+             random.randint(1, 3)]
+            for _ in range(150)
+        ]
+
         self.ship = Ship(self) #passa o self(classe AlienInvasion) para a classe Ship
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
@@ -37,6 +47,13 @@ class AlienInvasion():
         self.powerup_text_timer = 0
         self.powerup_text_pos = (0, 0)
         self.powerup_count = 0
+        self.explosions = pygame.sprite.Group()
+        self.powerup_colors = [
+            (200, 200, 200),
+            (0, 200, 255),
+            (255, 140, 0),
+            (255, 215, 0),
+        ]
 
         #cria o botão Play
         self.play_button = Button(self, "Play") #"Play" corresponde ao parâmetro msg
@@ -77,6 +94,7 @@ class AlienInvasion():
             #descarta quaisquer projéteis e alienígenas restantes
             self.bullets.empty()
             self.aliens.empty()
+            self.explosions.empty()
             #cria uma frota nova e centraliza a espaçonave
             self._create_fleet()
             self.ship.center_ship()
@@ -127,12 +145,12 @@ class AlienInvasion():
 
         if collisions:
             for aliens in collisions.values():
-                #incrementa a pontuação multiplicando o valor de um alienígena pela quantidade de inimigos atingidos na mesma colisão
-                #a função len() é usada para identificar o tamanho da lista de aliens abatidos, garantindo que todos os pontos sejam contabilizados
-                self.stats.score += self.settings.alien_points * len(aliens) 
+                for alien in aliens:
+                    self.explosions.add(Explosion(self, alien.rect.center))
+                self.stats.score += self.settings.alien_points * len(aliens)
 
             self.sb.prep_score() #cria uma imagem nova com a pontuação atualizada
-            self.sb.check_high_score() #checa se o recorde foi batido 
+            self.sb.check_high_score() #checa se o recorde foi batido
 
         if not self.aliens:
             #destrói os projéteis existentes e cria uma frota nova
@@ -153,6 +171,7 @@ class AlienInvasion():
                 self.settings.bullet_speed *= 1.5
                 self.settings.bullet_width += 4
                 self.powerup_count += 1
+            self.settings.bullet_color = self.powerup_colors[self.powerup_count]
 
     def _create_fleet(self):
         #cria a frota de alienígenas
@@ -240,11 +259,23 @@ class AlienInvasion():
     def _update_screen(self):
         #redesenha a tela durante cada passagem pelo loop
         self.screen.fill(self.settings.bg_color)
+
+        for star in self.stars:
+            pygame.draw.circle(self.screen, (200, 200, 220), (int(star[0]), int(star[1])), star[3])
+            star[1] += star[2]
+            if star[1] > self.settings.screen_height:
+                star[1] = 0
+                star[0] = random.randint(0, self.settings.screen_width)
+
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.ship.blitme()
         self.powerup.blitme_powerup()
         self.aliens.draw(self.screen)
+
+        self.explosions.update()
+        for explosion in self.explosions.sprites():
+            explosion.draw_explosion()
 
         #desenha as informações da pontuação
         self.sb.show_score()

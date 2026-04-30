@@ -10,7 +10,7 @@ class Powerup(Sprite):
         self.settings = ai_game.settings
         self.screen_rect = ai_game.screen.get_rect()
 
-        ship_image = pygame.image.load("./images/ship.bmp")
+        ship_image = pygame.image.load("./images/ship.png")
 
         #pega o tamanho da nave
         ship_width, ship_height = ship_image.get_size()
