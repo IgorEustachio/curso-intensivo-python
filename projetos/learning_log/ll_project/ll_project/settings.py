@@ -33,7 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     #minhas aplicacoes
     'learning_logs',
-    'accounts'
+    'accounts',
 
     #aplicacoes automaticas do django
     'django.contrib.admin',
@@ -120,3 +120,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+#Minhas configs
+
+LOGIN_REDIRECT_URL = 'learning_logs:index'
+LOGOUT_REDIRECT_URL ='learning_logs:index'
