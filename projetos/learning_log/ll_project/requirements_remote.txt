@@ -1,0 +1,4 @@
+#reqs para o projeto
+
+gunicorn
+psycopg2
